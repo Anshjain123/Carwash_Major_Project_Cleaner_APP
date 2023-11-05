@@ -11,17 +11,17 @@ const Home = ({ route, navigation }) => {
     const { email } = route.params;
     const [allAssignedCars, setallAssignedCars] = useState([]);
     // const navigation = useNavigation();
-    const getData = async () => {
-
-        const docRef = doc(db, "cities", `${email}`)
-        const docSnap = await getDoc(docRef)
-
-        // console.log("debug")
-        console.log("Printing DocSnap", docSnap.data());
-        setallAssignedCars(docSnap.data().assignedCars);
-    }
-
+    
     useEffect(() => {
+        const getData = async () => {
+    
+            const docRef = doc(db, "cities", `${email}`)
+            const docSnap = await getDoc(docRef)
+    
+            // console.log("debug")
+            console.log("Printing DocSnap", docSnap.data());
+            setallAssignedCars(docSnap.data().assignedCars);
+        }
 
 
         getData();
@@ -33,7 +33,7 @@ const Home = ({ route, navigation }) => {
 
     const handleAddMedia = (car) => {
         console.log("Adding car media to user");
-        navigation.navigate("uploadMedia");
+        navigation.navigate("uploadMedia", { car: car });
     }
 
     return (
