@@ -5,44 +5,41 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import Home from './Screens/Home';
 import LoginScreen from './Screens/LoginScreen';
 import { useEffect, useState } from 'react';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { auth } from './firebase';
 import UploadImage from './Screens/UploadImage';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ShowImage from './Screens/ShowImage';
 
+
+
 export default function App() {
 
-  const [loginScreen, setloginScreen] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setemail] = useState(null);
 
+
+  // console.log(socket); 
+  // socket.onopen = () => {
+  //     console.log('WebSocket connected!'); 
+  // }
+
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setemail(user.email);
-        setloginScreen(false);
-        const uid = user.uid;
-        // ...
-      } else {
-        setloginScreen(true);
-        // User is signed out
-        // ...
-      }
-    });
+
 
   }, [])
 
-  const Stack = createNativeStackNavigator();
+  const Stack = createBottomTabNavigator();
   console.log(email, "EMAIl");
   return (
 
     <>
 
 
-      {loginScreen && <LoginScreen setloginScreen={setloginScreen} setemail={setemail} />}
-      {!loginScreen && <NavigationContainer>
+      {!isLoggedIn && <LoginScreen setIsLoggedIn={setIsLoggedIn} />}
+      {isLoggedIn && <NavigationContainer>
 
         <Stack.Navigator>
+
+
           <Stack.Screen
 
             name='Home'
@@ -53,13 +50,13 @@ export default function App() {
           <Stack.Screen
             name='uploadMedia'
             component={UploadImage}
-            // children={() => <UploadImage navigation={navigation} />}
+          // children={() => <UploadImage navigation={navigation} />}
           />
           <Stack.Screen
 
             name="showimage"
             component={ShowImage}
-            // children={() => <ShowImage />}
+          // children={() => <ShowImage />}
           />
         </Stack.Navigator>
       </NavigationContainer>}

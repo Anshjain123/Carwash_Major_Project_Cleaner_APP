@@ -1,31 +1,118 @@
 import { View, ScrollView, StyleSheet, Image } from 'react-native';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import { Text, Card, Button, Icon } from '@rneui/themed';
-import { doc, getDoc } from "firebase/firestore";
-import { db } from '../firebase';
+import storage from '../storage';
+
 
 
 
 const Home = ({ route, navigation }) => {
 
-    const { email } = route.params;
-    const [allAssignedCars, setallAssignedCars] = useState([]);
+
+
+    const reducer = (state, action) => {
+        // console.log(action);
+        // state.username = action.username;
+        return action.username; 
+    }
+
+    const { email, flag } = route.params;
+    const [allAssignedCars, setallAssignedCars] = useState(null);
+    const [username, setusername] = useState(null); 
+    const [token, settoken] = useState("")
+    const [added, setadded] = useState(false);
+    const [allWashedCarsToday, setallWashedCarsToday] = useState([]);
     // const navigation = useNavigation();
+    // const [username, dispatch] = useReducer(reducer, '');
+
+    const getCarWashedToday = async () => {
+        
+        let res = await storage.load({key: "CleanerloginState"})
+    
+        let token = res.token; 
+
+        res = await fetch("http://172.31.70.192:8080/getCarWashedToday", {
+            method:"GET",
+            headers: {
+                'Content-Type': 'application/json', 
+                "Authorization" : `Bearer ${token}`            
+            } 
+        })
+        try {
+            const response = await res.json();
+            console.log(response);
+            setallWashedCarsToday(response);
+        } catch (error) {
+            console.log(res.status);
+            console.log(error); 
+        }
+    }
+
+    
+
+
+    const getUsername = async () => {
+        
+        
+        
+        // await storage.load({ key: "" })
+        //     .then(ret => {
+        //         // console.log(ret); 
+        //         setusername(ret["username"]);
+        //         settoken(ret["jwtToken"]);
+        //         // return ret["username"];
+        //     }).catch(err => {
+        //         console.log(err);
+        //     })
+    }
+
+    const getData = async () => {
+
+        // getUsername();
+
+        let res = await storage.load({key: "CleanerloginState"})
+    
+        let username = res.username
+        let token = res.token; 
+        settoken(token);
+        // console.log(res);
+
+        // console.log("printing token") ;
+
+        try {
+            let res = await fetch(`http://172.31.70.192:8080/cleaner/getAllCleanerCars/${username}`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json', 
+                    "Authorization" : `Bearer ${token}`            
+                } 
+                
+            })
+
+            try {
+                let response = await res.json();
+                console.log(response)
+                setallAssignedCars(response);
+                
+            } catch (error) {
+                console.log("problem converting res to res.json in getData in Home"); 
+            }
+    
+        } catch (error) {
+            console.log("error in home in retrieving all cleaners assigned cars!");
+            console.log(error); 
+        }
+        
+        
+        
+    }
+    
     
     useEffect(() => {
-        const getData = async () => {
-    
-            const docRef = doc(db, "cities", `${email}`)
-            const docSnap = await getDoc(docRef)
-    
-            // console.log("debug")
-            console.log("Printing DocSnap", docSnap.data());
-            setallAssignedCars(docSnap.data().assignedCars);
-        }
-
-
+        
+        
         getData();
-
+        getCarWashedToday();
     }, []);
 
     // console.log(allAssignedCars)
@@ -33,7 +120,9 @@ const Home = ({ route, navigation }) => {
 
     const handleAddMedia = (car) => {
         console.log("Adding car media to user");
-        navigation.navigate("uploadMedia", { car: car });
+        
+        navigation.navigate("uploadMedia", { car: car, setadded:setadded  });
+        
     }
 
     return (
@@ -41,28 +130,24 @@ const Home = ({ route, navigation }) => {
             <ScrollView>
                 <View style={styles.container}>
                     {/* <Card.Title>Welcome {props.email}</Card.Title> */}
-                    {allAssignedCars.map((car, i) => {
-                        return (
+                    {allAssignedCars && allAssignedCars.map((car, i) => {
+                        return <View key={i}>
+
                             <Card>
-                                <View key={i} style={styles.user} >
-                                    {/* <Image
-                                        style={styles.image}
-                                        resizeMode="cover"
-                                        source={{ uri: u.avatar }}
-                                    /> */}
-                                    <View>
-                                        <Text style={styles.name}>CarModel - {car.carModel}</Text>
-                                        <Text style={styles.name}>CaNumber - {car.carNumber}</Text>
-                                        <Text style={styles.name}>Description - {car.description}</Text>
-                                    </View>
+                                <View>
+                                    <Text style={styles.name}>CarModel - {car.carModel}</Text>
+                                    <Text style={styles.name}>CaNumber - {car.carNumber}</Text>
+                                    <Text style={styles.name}>Description - {car.description}</Text>
+                                </View>
 
-                                    <View>
-                                        <Button onPress={() => handleAddMedia(car)} >Add media</Button>
-                                    </View>
-
+                                <View>
+                                    <Button disabled={(added == true || allWashedCarsToday.includes(car.carNumber) == true) ? true : false} onPress={() => handleAddMedia(car)}  >Add media</Button>
                                 </View>
                             </Card>
-                        );
+
+
+                        </View>
+
                     })}
 
                 </View>
@@ -81,7 +166,7 @@ const styles = StyleSheet.create({
     user: {
         flexDirection: 'row',
         marginBottom: 6,
-        justifyContent: 'space-between'
+        justifyContent: 'space-around'
 
     },
     image: {

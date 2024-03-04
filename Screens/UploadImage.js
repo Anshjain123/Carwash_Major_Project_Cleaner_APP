@@ -2,27 +2,16 @@ import React, { useState, useEffect, useReducer } from 'react';
 import { Image, View, Platform, TouchableOpacity, Text, StyleSheet, ScrollView } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-// import * as ImagePicker from 'react-native-image-picker';
-import { launchCameraAsync } from 'expo-image-picker';
 import { Button } from '@rneui/base';
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
-
-
+import storage from '../storage';
+import * as FileSystem from 'expo-file-system';
+import { decode } from 'base64-js';
+import { Buffer } from "buffer";
 
 const UploadImage = ({ navigation, route }) => {
 
-    // const reducer = (prevState, action) => {
-    //     let array;
 
-    //     arr = [...prevState];
-    //     arr.push(action.payload);
-
-    //     return arr;
-    // }
-
-    // const [allImages, dispatch] = useReducer(reducer, [])
-
-    const { car } = route.params
+    const { car, setadded } = route.params
     // console.log("Printing car", car);
 
     const [image1, setImage1] = useState(null);
@@ -31,103 +20,98 @@ const UploadImage = ({ navigation, route }) => {
     const [image4, setImage4] = useState(null);
     const [image5, setImage5] = useState(null);
 
+    const [url1, setUrl1] = useState(null);
+    const [url2, setUrl2] = useState(null);
+    const [url3, setUrl3] = useState(null);
+    const [url4, setUrl4] = useState(null);
+    const [url5, setUrl5] = useState(null);
+
     const [url, seturl] = useState(null)
     const [allImages, setallImages] = useState([])
     const [allUrls, setallUrls] = useState([])
+    const [allImagesData, setallImagesData] = useState([])
+    const [progress, setprogress] = useState(0)
+    const [refreshKey, setrefreshKey] = useState(0)
+
     // const navigation = useNavigation();
 
-    // useEffect(() => {
 
-    // }, [])
 
     const addImage = async (number) => {
 
-
-        let _image = await launchCameraAsync({
+        let _image = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
+            // allowsEditing: true
             aspect: [4, 3],
-            quality: 1,
+            base64: true
         })
 
-        // console.log(_image.assets[0].uri);
 
-        if (number == 1) {
-            setImage1(_image.assets[0].uri)
-        } else if (number == 2) {
-            setImage2(_image.assets[0].uri)
-        } else if (number == 3) {
-            setImage3(_image.assets[0].uri)
-        } else if (number == 4) {
-            setImage4(_image.assets[0].uri)
-        } else {
-            setImage5(_image.assets[0].uri)
-        }
+        const uri = _image.assets[0].uri;
+        // // ImagePicker.launchCamera
+        
 
 
 
-        // setallImages([...allImages, image]);
         let arr = allImages;
-        arr.push(_image.assets[0].uri);
+        // console.log(blob); 
 
-        // dispatch({
-        //     payload: _image.assets[0].uri
-        // })
+        arr.push(uri);
+
         setallImages(arr);
-        // console.log("printing all images", allImages[0]);
-        // console.log("Printing image uri", image)
 
+        let base = _image.assets[0].base64; 
+        
 
-        // / image has these properties the above _image -> 
+        
+        arr = allImagesData; 
+        arr.push(base); 
 
-        // {
-        //     "cancelled":false,
-        //     "width":1080,
-        //     "type":"image",
-        //     "uri":"file:///data/user/0/host.exp.exponent/cache/ExperienceData/UNVERIFIED-192.168.1.5-react-expo-image-picker-guide/ImagePicker/a590d059-f144-45fe-ba8e-fc26b3c40aee.jpg",
-        //     "he
+        setallImagesData(arr); 
 
+        setrefreshKey(refreshKey + 1);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
 
+        let res = await storage.load({ key: "CleanerloginState" })
 
-        allImages.map((image, index) => {
-            const storage = getStorage();
-            var storagePath = `images/${car.id}/${car.carNumber}/${index}`;
+        let username = res.username
+        let token = res.token;
 
-            //     const storage = getStorage();
-            // var storagePath = "uploads/" + selectedFile.name;
-            const storageRef = ref(storage, storagePath);
-            const uploadTask = uploadBytesResumable(storageRef, image);
-
-            uploadTask.on('state_changed', (snapshot) => {
-                const prog = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                // console.log("upload is " + prog + '% done');
-                if (prog === 100) {
-                    toast.success("Your File has been successfully uploaded");
-                }
-            }, (error) => {
-                console.log(error);
-            }, async () => {
-                getDownloadURL(uploadTask.snapshot.ref).then(async (downloadUrl) => {
-                    // console.log("File Available at" + downloadUrl);
-                    seturl(downloadUrl);
-                    setallUrls([...allUrls, downloadUrl]);
-                    // console.log("Printing URL", url);
-                    navigation.navigate('showimage', { url: downloadUrl })
-                })
-            })
+        // // console.log(allImages);
+        // let image = "8cca9b7c-b0b5-47ab-9ae5-d85f0520064d.jpeg"; 
+        // let formData = new FormData();
+        // formData.append('image', image); 
+        // console.log(formData);
+        
+        let body = {
+            allImagesData:allImagesData, 
+            carNumber: car.carNumber
+        }
+        
+        res = await fetch("http://172.31.70.192:8080/cleaner/postMedia", {
+            method: "POST",
+            headers: {
+                "Content-Type":"application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body:JSON.stringify(body) 
         })
+        setadded(true); 
+        navigation.navigate("Home");
+
+        // console.log(res); 
     }
 
     return (
         <>
             <ScrollView>
                 <View style={{ display: 'flex', flexDirection: 'row' }}>
+
                     <View style={imageUploaderStyles.container}>
                         {
-                            image1 && <Image source={{ uri: image1 }} style={{ width: 200, height: 200 }} />
+                            allImages.length >= 0 && <Image source={{ uri: `data:image/png;base64,${allImagesData[0]}}` }} style={{ width: 200, height: 200 }} />
                         }
                         <View style={imageUploaderStyles.uploadBtnContainer}>
                             <TouchableOpacity onPress={() => addImage("1")} style={imageUploaderStyles.uploadBtn} >
@@ -139,7 +123,7 @@ const UploadImage = ({ navigation, route }) => {
                     </View>
                     <View style={imageUploaderStyles.container}>
                         {
-                            image2 && <Image source={{ uri: image2 }} style={{ width: 200, height: 200 }} />
+                            allImages.length >= 1 && <Image source={{ uri: `data:image/png;base64,${allImagesData[1]}}` }} style={{ width: 200, height: 200 }} />
                         }
                         <View style={imageUploaderStyles.uploadBtnContainer}>
                             <TouchableOpacity onPress={() => addImage("2")} style={imageUploaderStyles.uploadBtn} >
@@ -154,7 +138,7 @@ const UploadImage = ({ navigation, route }) => {
 
                     <View style={imageUploaderStyles.container}>
                         {
-                            image3 && <Image source={{ uri: image3 }} style={{ width: 200, height: 200 }} />
+                            allImages.length >= 2 && <Image source={{ uri: `data:image/png;base64,${allImagesData[2]}}` }} style={{ width: 200, height: 200 }} />
                         }
                         <View style={imageUploaderStyles.uploadBtnContainer}>
                             <TouchableOpacity onPress={() => addImage("3")} style={imageUploaderStyles.uploadBtn} >
@@ -166,7 +150,7 @@ const UploadImage = ({ navigation, route }) => {
                     </View>
                     <View style={imageUploaderStyles.container}>
                         {
-                            image4 && <Image source={{ uri: image4 }} style={{ width: 200, height: 200 }} />
+                            allImages.length >= 3 && <Image source={{ uri: `data:image/png;base64,${allImagesData[3]}}` }} style={{ width: 200, height: 200 }} />
                         }
                         <View style={imageUploaderStyles.uploadBtnContainer}>
                             <TouchableOpacity onPress={() => addImage("4")} style={imageUploaderStyles.uploadBtn} >
@@ -179,7 +163,7 @@ const UploadImage = ({ navigation, route }) => {
                 </View>
                 <View style={imageUploaderStyles.container}>
                     {
-                        image5 && <Image source={{ uri: image5 }} style={{ width: 200, height: 200 }} />
+                        allImages.length >= 4 && <Image source={{ uri: `data:image/png;base64,${allImagesData[4]}}` }} style={{ width: 200, height: 200 }} />
                     }
                     <View style={imageUploaderStyles.uploadBtnContainer}>
                         <TouchableOpacity onPress={() => addImage("5")} style={imageUploaderStyles.uploadBtn} >
@@ -190,7 +174,7 @@ const UploadImage = ({ navigation, route }) => {
 
                 </View>
                 <Button onPress={() => handleSubmit()} >Submit</Button>
-                {/* {url != null && <Image source={{ uri: url }} style={{ width: 200, height: 200 }} />} */}
+                {/* {<Image source={{ uri: "http://172.31.67.171:8080/getMedia/image0" }} style={{ width: 200, height: 200 }} />} */}
             </ScrollView>
         </>
     )

@@ -8,40 +8,74 @@ import {
     Button,
     TouchableOpacity,
 } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import storage from "../storage";
+import { LogBox } from 'react-native';
 
-
-const LoginScreen = ({setloginScreen, setemail, navigation}) => {
+const LoginScreen = ({ setIsLoggedIn, navigation }) => {
 
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const handlelogin = () => {
+
+    LogBox.ignoreLogs([
+        'Non-serializable values were found in the navigation state',
+    ]);
+
+    const storeData = async (data) => {
+        console.log("trying to store jwt and user");
+        try {
+
+            storage.save({
+                key: "CleanerloginState",
+                data: {
+                    "token": data["jwtToken"],
+                    "username": data["username"]
+                },
+                expires: null
+            })
+
+            // storage.load({key:"loginState"})
+            // .then(ret => {
+            //     console.log(ret); 
+            // }).catch(err => {
+            //     console.log(err); 
+            // }) 
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    const handlelogin = async () => {
         console.log("trying to login");
         // console.log(props); 
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                
-                const user = userCredential.user;
-                console.log(user, "Signed in"); 
-                setloginScreen(false);
-                setemail(user.email); 
-                console.log(user.email, "email"); 
-                // ...
+
+        try {
+
+            let res = await fetch("http://172.31.70.192:8080/login/cleaner", {
+                method: "POST",
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                body: JSON.stringify({ username: email, password: password })
             })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorMessage); 
-            });
+            if (res.ok) {
+                let response = await res.json();
+                console.log(response);
+                storeData(response);
+                setIsLoggedIn(true);
+                // console.log(response["jwtToken"]);
+
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
         <View style={styles.container}>
-            {/* <Image style={styles.image} source={require("./assets/log2.png")} /> */}
-            {/* <StatusBar style="auto" /> */}
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.TextInput}
