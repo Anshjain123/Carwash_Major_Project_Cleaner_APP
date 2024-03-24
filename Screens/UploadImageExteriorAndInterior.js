@@ -168,7 +168,7 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
         <>
             <ScrollView>
 
-                {visible && <Progress.Bar progress={progress} width={screenWidth} />}
+                {visible && <Progress.Bar progress={progress} style={{width:"100vw"}} />}
                 <Toast style={imageUploaderStyles.toast} position='bottom' />
                 <View style={{ zIndex: -1 }} >
                     <View>
