@@ -23,13 +23,15 @@ const UploadMediaExterior = ({ navigation, route }) => {
     const [progress, setprogress] = useState(0)
     const [refreshKey, setrefreshKey] = useState(0)
     const [visible, setvisible] = useState(false);
+    const [extFiles, setextFiles] = useState([null, null, null, null, null]); 
+
     // const navigation = useNavigation();
 
 
 
 
 
-    const addImage = async (number) => {
+    const addImage = async (idx) => {
 
         const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
         // console.log(permissionResult);
@@ -66,7 +68,12 @@ const UploadMediaExterior = ({ navigation, route }) => {
         arr = allImagesData;
         arr.push(base);
 
+        
         setallImagesData(arr);
+
+        arr = extFiles; 
+        arr[idx] = base; 
+        setextFiles(arr); 
 
         setrefreshKey(refreshKey + 1);
     };
@@ -155,6 +162,7 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
     const screenWidth = window.innerWidth; 
 
+    console.log(extFiles); 
     return (
         <>
             <ScrollView>
@@ -166,10 +174,10 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
                         <View style={imageUploaderStyles.container}>
                             {
-                                allImages.length >= 0 && <Image source={{ uri: `data:image/png;base64,${allImagesData[0]}}` }} style={{ width: 200, height: 200 }} />
+                                extFiles[0] != null && <Image source={{ uri: `data:image/png;base64,${extFiles[0]}}` }} style={{ width: 200, height: 200 }} />
                             }
                             <View style={imageUploaderStyles.uploadBtnContainer}>
-                                <TouchableOpacity onPress={() => addImage("1")} style={imageUploaderStyles.uploadBtn} >
+                                <TouchableOpacity onPress={() => addImage(0)} style={imageUploaderStyles.uploadBtn} >
                                     <Text>Left side view</Text>
                                     <AntDesign name="camera" size={20} color="black" />
                                 </TouchableOpacity>
@@ -178,10 +186,10 @@ const UploadMediaExterior = ({ navigation, route }) => {
                         </View>
                         <View style={imageUploaderStyles.container}>
                             {
-                                allImages.length >= 1 && <Image source={{ uri: `data:image/png;base64,${allImagesData[1]}}` }} style={{ width: 200, height: 200 }} />
+                                extFiles[1] != null && <Image source={{ uri: `data:image/png;base64,${extFiles[1]}}` }} style={{ width: 200, height: 200 }} />
                             }
                             <View style={imageUploaderStyles.uploadBtnContainer}>
-                                <TouchableOpacity onPress={() => addImage("2")} style={imageUploaderStyles.uploadBtn} >
+                                <TouchableOpacity onPress={() => addImage(1)} style={imageUploaderStyles.uploadBtn} >
                                     <Text>Right side View</Text>
                                     <AntDesign name="camera" size={20} color="black" />
                                 </TouchableOpacity>
@@ -193,10 +201,10 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
                         <View style={imageUploaderStyles.container}>
                             {
-                                allImages.length >= 2 && <Image source={{ uri: `data:image/png;base64,${allImagesData[2]}}` }} style={{ width: 200, height: 200 }} />
+                                extFiles[2] != null && <Image source={{ uri: `data:image/png;base64,${extFiles[2]}}` }} style={{ width: 200, height: 200 }} />
                             }
                             <View style={imageUploaderStyles.uploadBtnContainer}>
-                                <TouchableOpacity onPress={() => addImage("3")} style={imageUploaderStyles.uploadBtn} >
+                                <TouchableOpacity onPress={() => addImage(2)} style={imageUploaderStyles.uploadBtn} >
                                     <Text>Front view</Text>
                                     <AntDesign name="camera" size={20} color="black" />
                                 </TouchableOpacity>
@@ -205,10 +213,10 @@ const UploadMediaExterior = ({ navigation, route }) => {
                         </View>
                         <View style={imageUploaderStyles.container}>
                             {
-                                allImages.length >= 3 && <Image source={{ uri: `data:image/png;base64,${allImagesData[3]}}` }} style={{ width: 200, height: 200 }} />
+                                extFiles[3] != null && <Image source={{ uri: `data:image/png;base64,${extFiles[3]}}` }} style={{ width: 200, height: 200 }} />
                             }
                             <View style={imageUploaderStyles.uploadBtnContainer}>
-                                <TouchableOpacity onPress={() => addImage("4")} style={imageUploaderStyles.uploadBtn} >
+                                <TouchableOpacity onPress={() => addImage(3)} style={imageUploaderStyles.uploadBtn} >
                                     <Text>Back view</Text>
                                     <AntDesign name="camera" size={20} color="black" />
                                 </TouchableOpacity>
@@ -218,10 +226,10 @@ const UploadMediaExterior = ({ navigation, route }) => {
                     </View>
                     <View style={imageUploaderStyles.container}>
                         {
-                            allImages.length >= 4 && <Image source={{ uri: `data:image/png;base64,${allImagesData[4]}}` }} style={{ width: 200, height: 200 }} />
+                            extFiles[4] != null && <Image source={{ uri: `data:image/png;base64,${extFiles[4]}}` }} style={{ width: 200, height: 200 }} />
                         }
                         <View style={imageUploaderStyles.uploadBtnContainer}>
-                            <TouchableOpacity onPress={() => addImage("5")} style={imageUploaderStyles.uploadBtn} >
+                            <TouchableOpacity onPress={() => addImage(4)} style={imageUploaderStyles.uploadBtn} >
                                 <Text>Number plate view</Text>
                                 <AntDesign name="camera" size={20} color="black" />
                             </TouchableOpacity>
