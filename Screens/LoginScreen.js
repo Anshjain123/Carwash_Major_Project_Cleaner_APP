@@ -50,10 +50,10 @@ const LoginScreen = ({ setIsLoggedIn, navigation }) => {
     const handlelogin = async () => {
         console.log("trying to login");
         // console.log(props); 
-
+        
         try {
 
-            let res = await fetch("http://172.31.70.192:8080/login/cleaner", {
+            let res = await fetch("http://192.168.1.23:8080/login/cleaner", {
                 method: "POST",
                 headers: {
                     'Content-Type': "application/json"

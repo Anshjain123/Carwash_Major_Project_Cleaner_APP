@@ -1,18 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import Home from './Screens/Home';
 import LoginScreen from './Screens/LoginScreen';
 import { useEffect, useState } from 'react';
-import UploadImage from './Screens/UploadImage';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ShowImage from './Screens/ShowImage';
-
-
+import { AntDesign } from '@expo/vector-icons';
+import UploadMediaExterior from './Screens/UploadImageExterior';
+import UploadImageExteriorAndInterior from './Screens/UploadImageExteriorAndInterior';
 
 export default function App() {
 
+  // const navigation = useNavigation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setemail] = useState(null);
 
@@ -27,7 +28,7 @@ export default function App() {
 
   }, [])
 
-  const Stack = createBottomTabNavigator();
+  const Stack = createNativeStackNavigator();
   console.log(email, "EMAIl");
   return (
 
@@ -45,19 +46,43 @@ export default function App() {
             name='Home'
             component={Home}
             initialParams={{ email: email }}
+
           // children={() => <Home email={email} navigation={navigation} />}
           />
           <Stack.Screen
-            name='uploadMedia'
-            component={UploadImage}
+            name='uploadMediaExterior'
+            component={UploadMediaExterior}
+            options={({ navigation }) => ({
+              headerLeft: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <AntDesign name="arrowleft" size={24} color="black" />
+                </TouchableOpacity>
+              ),
+              
+            })}
+
           // children={() => <UploadImage navigation={navigation} />}
           />
+
           <Stack.Screen
+            name='uploadMediaExteriorAndInterior'
+            component={UploadImageExteriorAndInterior}
+            options={({ navigation }) => ({
+              headerLeft: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <AntDesign name="arrowleft" size={24} color="black" />
+                </TouchableOpacity>
+              ),
+            })}
+
+          // children={() => <UploadImage navigation={navigation} />}
+          />
+          {/* <Stack.Screen
 
             name="showimage"
             component={ShowImage}
           // children={() => <ShowImage />}
-          />
+          /> */}
         </Stack.Navigator>
       </NavigationContainer>}
     </>
