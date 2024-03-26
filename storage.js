@@ -3,6 +3,11 @@ import React from 'react'
 import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+// In React Native applications, including those built with Expo, the SQLite database used by AsyncStorage on Android is not explicitly created or managed by the Expo app itself. Instead, AsyncStorage relies on the SQLite database engine provided by the Android operating system.
+
+// When you install and run a React Native app (including Expo apps) on an Android device, the app is given its own private storage space within the device's file system. AsyncStorage uses this private storage space to create and manage a SQLite database file to store key-value pairs.
+
 const storage = new Storage({
     // maximum capacity, default 1000 key-ids
     size: 1000,

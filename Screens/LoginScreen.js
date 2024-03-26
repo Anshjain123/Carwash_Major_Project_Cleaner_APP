@@ -58,7 +58,7 @@ const LoginScreen = ({ setIsLoggedIn, navigation }) => {
                 headers: {
                     'Content-Type': "application/json"
                 },
-                body: JSON.stringify({ username: email, password: password })
+                body: JSON.stringify({ username: email, password: password, type:"cleaner" })
             })
             if (res.ok) {
                 let response = await res.json();
