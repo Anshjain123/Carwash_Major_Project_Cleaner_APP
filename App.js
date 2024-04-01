@@ -10,6 +10,7 @@ import ShowImage from './Screens/ShowImage';
 import { AntDesign } from '@expo/vector-icons';
 import UploadMediaExterior from './Screens/UploadImageExterior';
 import UploadImageExteriorAndInterior from './Screens/UploadImageExteriorAndInterior';
+import CarDetails from './Screens/CarDetails';
 
 export default function App() {
 
@@ -50,6 +51,14 @@ export default function App() {
           // children={() => <Home email={email} navigation={navigation} />}
           />
           <Stack.Screen
+
+            name='cardetails'
+            component={CarDetails}
+            // initialParams={{ email: email }}
+
+          // children={() => <Home email={email} navigation={navigation} />}
+          />
+          <Stack.Screen
             name='uploadMediaExterior'
             component={UploadMediaExterior}
             options={({ navigation }) => ({
@@ -58,7 +67,7 @@ export default function App() {
                   <AntDesign name="arrowleft" size={24} color="black" />
                 </TouchableOpacity>
               ),
-              
+
             })}
 
           // children={() => <UploadImage navigation={navigation} />}

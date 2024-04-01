@@ -86,7 +86,7 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
 
     const handleSubmit = async () => {
 
-        if (intImages.length < 5 || extImages.length < 5) {
+        if (intFiles.length < 5 || extFiles.length < 5) {
 
             showToastError();
             return;

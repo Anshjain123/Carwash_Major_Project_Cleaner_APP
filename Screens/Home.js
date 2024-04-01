@@ -1,5 +1,5 @@
-import { View, ScrollView, StyleSheet, Image } from 'react-native';
-import React, { useEffect, useReducer, useState } from 'react'
+import { View, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useLayoutEffect, useReducer, useState } from 'react'
 import { Text, Card, Button, Icon } from '@rneui/themed';
 import storage from '../storage';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -7,15 +7,13 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import FlashMessage, { showMessage } from "react-native-flash-message";
 import Toast from 'react-native-toast-message';
 import * as Progress from 'react-native-progress';
+import CarDetails from './CarDetails';
+
 
 
 const Home = ({ route, navigation }) => {
 
 
-    const data = [
-        { label: 'Exterior car wash', value: 'exterior' },
-        { label: 'Interior and Exterior car wash', value: 'interior' }
-    ];
 
 
     const { email, flag } = route.params;
@@ -62,20 +60,42 @@ const Home = ({ route, navigation }) => {
         return null;
     };
 
-    const getUsername = async () => {
-
-
-
-        // await storage.load({ key: "" })
-        //     .then(ret => {
-        //         // console.log(ret); 
-        //         setusername(ret["username"]);
-        //         settoken(ret["jwtToken"]);
-        //         // return ret["username"];
-        //     }).catch(err => {
-        //         console.log(err);
-        //     })
+    const handlegetData = () => {
+        getData();
+        getCarWashedToday();
     }
+    useLayoutEffect(() => {
+
+        navigation.setOptions({
+            headerRight: () => (
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginRight: 10 }}>
+                    <TouchableOpacity onPress={() => handlegetData()} >
+                        <AntDesign name="reload1" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
+            )
+        })
+    }, [])
+
+
+
+    const data1 = [
+        { label: 'Exterior car wash', value: 'exterior'},
+        { label: 'Interior and Exterior car wash', value: 'interior'}
+    ];
+
+    const data2 = [
+        { label: 'Exterior car wash', value: 'exterior'},
+        { label: 'Interior and Exterior car wash', value: 'interior'}
+    ];
+
+    const data3 = [
+        { label: 'Exterior car wash', value: 'exterior'},
+        { label: 'Interior and Exterior car wash', value: 'interior'}
+    ];
+
+
+
 
     const getData = async () => {
 
@@ -116,42 +136,12 @@ const Home = ({ route, navigation }) => {
     }
     useEffect(() => {
 
-
         getData();
         getCarWashedToday();
     }, []);
 
 
-    const showError = () => {
-        showMessage({
-            message: "Please select type of car wash",
-            type: "danger",
-            position: "top",
-            duration: 3000, // 3 seconds
-        });
-    };
 
-    const showToastError = () => {
-        Toast.show({
-            type: 'error',
-            text1: 'Please select type of car wash'
-        });
-    }
-
-    const handleAddMedia = (car) => {
-        console.log("Adding car media to user");
-        if (value == null) {
-            showToastError();
-            return;
-        }
-
-        if (value === "exterior") {
-            navigation.navigate("uploadMediaExterior", { car: car, setadded: setadded });
-        } else {
-            navigation.navigate("uploadMediaExteriorAndInterior", { car: car, setadded: setadded });
-        }
-
-    }
 
     return (
         <>
@@ -160,61 +150,17 @@ const Home = ({ route, navigation }) => {
                 {renderLabel()}
                 <Toast style={{ zIndex: 1 }} position='top' />
                 <View style={styles.container}>
-                    {/* <Card.Title>Welcome {props.email}</Card.Title> */}
                     {allAssignedCars && allAssignedCars.map((car, i) => {
-                        return <View key={i}>
+                        return <CarDetails key={car.carNumber} car={car} data={data1} allWashedCarsToday={allWashedCarsToday} navigation={navigation} />
 
-                            <Card >
-                                <View>
-                                    <Text style={styles.name}>CarModel - {car.carModel}</Text>
-                                    <Text style={styles.name}>CaNumber - {car.carNumber}</Text>
-                                    <Text style={styles.name}>Description - {car.description}</Text>
-                                </View>
-
-                                <View style={styles.dropdown__car__wash} >
-
-
-                                    <Dropdown
-                                        style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                                        placeholderStyle={styles.placeholderStyle}
-                                        selectedTextStyle={styles.selectedTextStyle}
-                                        inputSearchStyle={styles.inputSearchStyle}
-                                        iconStyle={styles.iconStyle}
-                                        data={data}
-                                        maxHeight={300}
-                                        labelField="label"
-                                        valueField="value"
-                                        placeholder={!isFocus ? 'Select type of car wash' : '...'}
-
-                                        value={value}
-                                        onFocus={() => setIsFocus(true)}
-                                        onBlur={() => setIsFocus(false)}
-                                        onChange={item => {
-                                            setValue(item.value);
-                                            setIsFocus(false);
-                                        }}
-                                        renderLeftIcon={() => (
-                                            <AntDesign
-                                                style={styles.icon}
-                                                color={isFocus ? 'blue' : 'black'}
-                                                name="Safety"
-                                                size={20}
-                                            />
-                                        )}
-                                    />
-
-                                </View>
-                                <View style={styles.btnView}>
-                                    <Button style={styles.btn} disabled={(added == true || allWashedCarsToday.includes(car.carNumber) == true) ? true : false} onPress={() => handleAddMedia(car)}  >Add media</Button>
-                                </View>
-                            </Card>
-
-
-                        </View>
 
                     })}
 
                 </View>
+
+                {/* {allAssignedCars && <CarDetails key={allAssignedCars[0].carNumber} car={allAssignedCars} data={data1} allWashedCarsToday={allWashedCarsToday} />}
+                {allAssignedCars && <CarDetails key={allAssignedCars[1].carNumber} car={allAssignedCars} data={data1} allWashedCarsToday={allWashedCarsToday} />}
+                {allAssignedCars && <CarDetails key={allAssignedCars[2].carNumber} car={allAssignedCars} data={data1} allWashedCarsToday={allWashedCarsToday} />} */}
             </ScrollView>
         </>
     )

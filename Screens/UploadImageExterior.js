@@ -106,6 +106,7 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
         setvisible(true);
 
+        
    
         let body = {
             allImagesData: allImagesData,
