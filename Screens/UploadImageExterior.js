@@ -115,7 +115,7 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
         setprogress(0.8);
 
-        res = await fetch("http://192.168.1.23:8080/cleaner/postMedia", {
+        res = await fetch("http://172.31.65.95:8080/cleaner/postMedia", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

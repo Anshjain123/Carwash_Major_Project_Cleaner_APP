@@ -4,6 +4,7 @@ import moment from 'moment';
 import { Text, Card, Button, Icon } from '@rneui/themed';
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Toast from 'react-native-toast-message';
 
 const CarDetails = ({ navigation, car, allWashedCarsToday, data }) => {
 
@@ -13,7 +14,7 @@ const CarDetails = ({ navigation, car, allWashedCarsToday, data }) => {
         "plan3": "#ffd700"
     }
 
-    
+
     console.log(data);
 
     const [added, setadded] = useState(false);
@@ -48,8 +49,11 @@ const CarDetails = ({ navigation, car, allWashedCarsToday, data }) => {
     // console.log(car.plan);
 
     return (
+
         <Card >
-            <View style={{ borderTopColor: colorPlans[car.plan], borderTopWidth: 5 }}>
+            <Toast position='top' style={{ zIndex: 1 }} />
+
+            <View style={{ borderTopColor: colorPlans[car.plan], borderTopWidth: 5, zIndex: -1 }}>
 
                 <View>
                     <Text style={styles.name}>CarModel - {car.carModel}</Text>
@@ -74,7 +78,7 @@ const CarDetails = ({ navigation, car, allWashedCarsToday, data }) => {
                         labelField="label"
                         valueField="value"
                         placeholder={!isFocus ? 'Select type of car wash' : '...'}
-                        
+
                         value={value}
                         onFocus={() => setIsFocus(true)}
                         onBlur={() => setIsFocus(false)}

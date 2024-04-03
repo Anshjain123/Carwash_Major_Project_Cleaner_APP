@@ -53,7 +53,7 @@ const LoginScreen = ({ setIsLoggedIn, navigation }) => {
         
         try {
 
-            let res = await fetch("http://192.168.1.23:8080/login/cleaner", {
+            let res = await fetch("http://172.31.65.95:8080/login/cleaner", {
                 method: "POST",
                 headers: {
                     'Content-Type': "application/json"

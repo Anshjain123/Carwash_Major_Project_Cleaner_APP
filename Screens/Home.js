@@ -8,7 +8,7 @@ import FlashMessage, { showMessage } from "react-native-flash-message";
 import Toast from 'react-native-toast-message';
 import * as Progress from 'react-native-progress';
 import CarDetails from './CarDetails';
-
+import { Ionicons } from '@expo/vector-icons';
 
 
 const Home = ({ route, navigation }) => {
@@ -16,7 +16,7 @@ const Home = ({ route, navigation }) => {
 
 
 
-    const { email, flag } = route.params;
+    const { email, flag, setIsLoggedIn } = route.params;
     const [allAssignedCars, setallAssignedCars] = useState(null);
     const [username, setusername] = useState(null);
     const [token, settoken] = useState("")
@@ -31,7 +31,7 @@ const Home = ({ route, navigation }) => {
 
         let token = res.token;
 
-        res = await fetch("http://192.168.1.23:8080/getCarWashedToday", {
+        res = await fetch("http://172.31.65.95:8080/getCarWashedToday", {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -64,34 +64,48 @@ const Home = ({ route, navigation }) => {
         getData();
         getCarWashedToday();
     }
+
+
     useLayoutEffect(() => {
 
         navigation.setOptions({
-            headerRight: () => (
+            headerLeft: () => (
                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginRight: 10 }}>
                     <TouchableOpacity onPress={() => handlegetData()} >
                         <AntDesign name="reload1" size={24} color="black" />
                     </TouchableOpacity>
                 </View>
-            )
+            ),
+            headerRight: () => (
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginRight: 10 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate("accountscreen", { setIsLoggedIn: setIsLoggedIn })}>
+                        <Ionicons name="settings-sharp" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
+            ),
+            title: "Home",
+            headerStyle: { backgroundColor: 'white' },
+            headerTitleStyle: { color: "black" },
+            headerTintColor: "black",
+            headerTitleAlign: 'center',
         })
     }, [])
 
 
 
     const data1 = [
-        { label: 'Exterior car wash', value: 'exterior'},
-        { label: 'Interior and Exterior car wash', value: 'interior'}
+        { label: 'Exterior car wash', value: 'exterior' },
+        { label: 'Interior and Exterior car wash', value: 'interior' }
     ];
 
     const data2 = [
-        { label: 'Exterior car wash', value: 'exterior'},
-        { label: 'Interior and Exterior car wash', value: 'interior'}
+        { label: 'Exterior car wash', value: 'exterior' },
+        { label: 'Interior and Exterior car wash', value: 'interior' }
     ];
 
     const data3 = [
-        { label: 'Exterior car wash', value: 'exterior'},
-        { label: 'Interior and Exterior car wash', value: 'interior'}
+        { label: 'Exterior car wash', value: 'exterior' },
+        { label: 'Interior and Exterior car wash', value: 'interior' }
     ];
 
 
@@ -111,7 +125,7 @@ const Home = ({ route, navigation }) => {
         // console.log("printing token") ;
 
         try {
-            let res = await fetch(`http://192.168.1.23:8080/cleaner/getAllCleanerCars/${username}`, {
+            let res = await fetch(`http://172.31.65.95:8080/cleaner/getAllCleanerCars/${username}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json',

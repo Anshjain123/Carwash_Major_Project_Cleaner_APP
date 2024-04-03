@@ -11,6 +11,8 @@ import { AntDesign } from '@expo/vector-icons';
 import UploadMediaExterior from './Screens/UploadImageExterior';
 import UploadImageExteriorAndInterior from './Screens/UploadImageExteriorAndInterior';
 import CarDetails from './Screens/CarDetails';
+import storage from './storage';
+import AccountScreen from './Screens/AccountScreen';
 
 export default function App() {
 
@@ -24,8 +26,31 @@ export default function App() {
   //     console.log('WebSocket connected!'); 
   // }
 
+
+  const validateToken = async () => {
+
+    let res = await storage.load({ key: "CleanerloginState" })
+    let username = res.username;
+    let token = res.token;
+
+    let response = await fetch("http://172.31.65.95:8080/cleaner/validateToken", {
+      method: "GET",
+      headers: {
+        'Content-Type': "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+    })
+
+    if(response.ok) {
+      setIsLoggedIn(true);  
+    }
+
+
+  }
+
   useEffect(() => {
 
+    validateToken();
 
   }, [])
 
@@ -46,7 +71,7 @@ export default function App() {
 
             name='Home'
             component={Home}
-            initialParams={{ email: email }}
+            initialParams={{ email: email, setIsLoggedIn:setIsLoggedIn }}
 
           // children={() => <Home email={email} navigation={navigation} />}
           />
@@ -54,7 +79,7 @@ export default function App() {
 
             name='cardetails'
             component={CarDetails}
-            // initialParams={{ email: email }}
+          // initialParams={{ email: email }}
 
           // children={() => <Home email={email} navigation={navigation} />}
           />
@@ -86,12 +111,12 @@ export default function App() {
 
           // children={() => <UploadImage navigation={navigation} />}
           />
-          {/* <Stack.Screen
+          <Stack.Screen
 
-            name="showimage"
-            component={ShowImage}
+            name="accountscreen"
+            component={AccountScreen}
           // children={() => <ShowImage />}
-          /> */}
+          />
         </Stack.Navigator>
       </NavigationContainer>}
     </>
