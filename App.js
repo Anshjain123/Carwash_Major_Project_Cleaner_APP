@@ -13,6 +13,8 @@ import UploadImageExteriorAndInterior from './Screens/UploadImageExteriorAndInte
 import CarDetails from './Screens/CarDetails';
 import storage from './storage';
 import AccountScreen from './Screens/AccountScreen';
+import Address from './Screens/Address';
+import ChangePassword from './Screens/ChangePassword';
 
 export default function App() {
 
@@ -41,8 +43,8 @@ export default function App() {
       },
     })
 
-    if(response.ok) {
-      setIsLoggedIn(true);  
+    if (response.ok) {
+      setIsLoggedIn(true);
     }
 
 
@@ -71,7 +73,7 @@ export default function App() {
 
             name='Home'
             component={Home}
-            initialParams={{ email: email, setIsLoggedIn:setIsLoggedIn }}
+            initialParams={{ email: email, setIsLoggedIn: setIsLoggedIn }}
 
           // children={() => <Home email={email} navigation={navigation} />}
           />
@@ -115,6 +117,19 @@ export default function App() {
 
             name="accountscreen"
             component={AccountScreen}
+          // children={() => <ShowImage />}
+          />
+
+          <Stack.Screen
+
+            name="address"
+            component={Address}
+          // children={() => <ShowImage />}
+          />
+          <Stack.Screen
+
+            name="password"
+            component={ChangePassword}
           // children={() => <ShowImage />}
           />
         </Stack.Navigator>

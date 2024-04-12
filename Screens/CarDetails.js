@@ -61,6 +61,7 @@ const CarDetails = ({ navigation, car, allWashedCarsToday, data }) => {
                     <Text style={styles.name}>Description - {car.description}</Text>
                     <Text style={styles.name}>Plan - {car.plan}</Text>
                     <Text style={styles.name}>Plan Validity - {moment(car.planValidity).utc().format("DD-MM-YYYY")}</Text>
+                    <Text style={styles.name}>carLocation - {car.carLocation}</Text>
                 </View>
 
                 <View style={styles.dropdown__car__wash} >

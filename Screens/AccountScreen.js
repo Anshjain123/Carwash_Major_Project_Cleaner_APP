@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useLayoutEffect } from 'react'
 import { Card, Button } from '@rneui/base';
 
@@ -27,26 +27,34 @@ const AccountScreen = ({ navigation, route }) => {
         }
     }
 
+    const handleAddress = async () => {
+        navigation.navigate("address")
+    }
+
+    const handlePassword = async () => {
+        navigation.navigate("password", { setIsLoggedIn: setIsLoggedIn });
+    }
+
     return (
         <View>
 
             <Card>
                 <View style={styles.user} >
-                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', width: '100%' }} >
+                    <TouchableOpacity onPress={() => handleAddress()} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', width: '100%' }} >
                         <Text>
                             Address
                         </Text>
-                    </View>
+                    </TouchableOpacity>
                 </View>
             </Card>
 
             <Card>
                 <View style={styles.user} >
-                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', width: '100%' }} >
+                    <TouchableOpacity onPress={() => handlePassword()} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', width: '100%' }} >
                         <Text>
                             Change Password
                         </Text>
-                    </View>
+                    </TouchableOpacity>
                 </View>
             </Card>
 
