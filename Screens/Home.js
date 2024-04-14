@@ -1,4 +1,4 @@
-import { View, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, ScrollView, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native';
 import React, { useEffect, useLayoutEffect, useReducer, useState } from 'react'
 import { Text, Card, Button, Icon } from '@rneui/themed';
 import storage from '../storage';
@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const Home = ({ route, navigation }) => {
 
+    const host = "172.31.65.218";
 
 
 
@@ -25,13 +26,19 @@ const Home = ({ route, navigation }) => {
     const [value, setValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
 
+
+    const [confirmModal, setconfirmModal] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+
+
+
     const getCarWashedToday = async () => {
 
         let res = await storage.load({ key: "CleanerloginState" })
 
         let token = res.token;
 
-        res = await fetch("http://172.31.65.95:8080/getCarWashedToday", {
+        res = await fetch(`http://${host}:8080/getCarWashedToday`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -78,7 +85,7 @@ const Home = ({ route, navigation }) => {
             ),
             headerRight: () => (
                 <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginRight: 10 }}>
-                    <TouchableOpacity onPress={() => navigation.navigate("accountscreen", { setIsLoggedIn: setIsLoggedIn })}>
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
                         <Ionicons name="settings-sharp" size={24} color="black" />
                     </TouchableOpacity>
                 </View>
@@ -125,7 +132,7 @@ const Home = ({ route, navigation }) => {
         // console.log("printing token") ;
 
         try {
-            let res = await fetch(`http://172.31.65.95:8080/cleaner/getAllCleanerCars/${username}`, {
+            let res = await fetch(`http://${host}:8080/cleaner/getAllCleanerCars/${username}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json',
@@ -152,11 +159,37 @@ const Home = ({ route, navigation }) => {
 
         getData();
         getCarWashedToday();
-    }, []);
+        setModalVisible(false);
+    }, [navigation]);
 
-
-
-
+    
+    const handleAddress = () => {
+        setModalVisible(false); 
+        navigation.navigate("address");
+    }
+    
+    const handlePassword = () => {
+        setModalVisible(false);
+        navigation.navigate("password", { setIsLoggedIn: setIsLoggedIn })
+    }
+    
+    const handleConfirm = () => {
+        setModalVisible(false);
+        setconfirmModal(true);
+    }
+    
+    const handleLogout = async () => {
+        
+        try {
+            const key = "CleanerloginState";
+            setIsLoggedIn(false);
+            storage.remove({ key: key })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    console.log(modalVisible);
+    
     return (
         <>
             <ScrollView>
@@ -166,10 +199,77 @@ const Home = ({ route, navigation }) => {
                 <View style={styles.container}>
                     {allAssignedCars && allAssignedCars.map((car, i) => {
                         return <CarDetails key={car.carNumber} car={car} data={data1} allWashedCarsToday={allWashedCarsToday} navigation={navigation} />
-
-
+                        
+                        
                     })}
+                </View>
 
+                <View>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => {
+                            setModalVisible(!modalVisible);
+                        }}
+
+                    >
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <View>
+
+                                    <TouchableOpacity onPress={() => handleAddress()} style={styles.user} >
+                                        <Text style={{ fontSize: 16 }} >
+                                            Address
+                                        </Text>
+
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity onPress={() => handlePassword()} style={styles.user} >
+                                        <Text style={{ fontSize: 16 }}>
+                                            Change Password
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => handleConfirm()} style={styles.user} >
+                                        <Text style={{ color: 'red', fontWeight: 'bold', fontSize: 16 }} >
+                                            Logout
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                                {/* <Text style={styles.modalText}>This is the modal content</Text> */}
+                                <Button title="Close" onPress={() => setModalVisible(false)} />
+                            </View>
+                        </View>
+                    </Modal>
+                </View>
+
+                <View>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={confirmModal}
+                        onRequestClose={() => {
+                            setconfirmModal(!confirmModal);
+                        }}
+
+                    >
+                        <View style={styles.confirmCenteredView}>
+                            <View style={styles.modalView}>
+                                <View>
+
+                                    <Text style={{ padding: 10, textAlign: 'center' }} >Are you sure to logout</Text>
+                                    <View style={{ marginBottom: 10 }} >
+
+                                        <Button color="red" title="Ok" onPress={() => handleLogout()} />
+                                    </View>
+                                    <View>
+
+                                        <Button title="Cancel" onPress={() => setconfirmModal(false)} />
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
 
                 {/* {allAssignedCars && <CarDetails key={allAssignedCars[0].carNumber} car={allAssignedCars} data={data1} allWashedCarsToday={allWashedCarsToday} />}
@@ -189,9 +289,9 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     user: {
-        flexDirection: 'row',
-        marginBottom: 6,
-        justifyContent: 'space-around'
+        // flexDirection: 'row',
+        marginBottom:15
+        // justifyContent: 'space-around'
 
     },
     image: {
@@ -243,44 +343,47 @@ const styles = StyleSheet.create({
     btnView: {
         paddingTop: 10
     },
+    centeredView: {
+        flex: 1,
+        flexDirection: "row",
+        padding: 20,
+        justifyContent: 'flex-end',
+        alignItems: 'flex-start'
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // flexDirection:'row'
+        // marginTop: 22,
+    },
+    confirmCenteredView: {
+        flex: 1,
+        // flexDirection: "row",
+        padding: 20,
+        // justifyContent: 'flex-end',
+        // alignItems: 'flex-start'
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // flexDirection:'row'
+        marginTop: 22,
+    },
+    modalView: {
+        marginTop: 30,
+
+        backgroundColor: 'white',
+        borderRadius: 20,
+        // width: '90%',
+        padding: 35,
+        // alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 2,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 50
+
+    },
+
 });
 
 export default Home
-
-
-
-
-
-
-
-
-
-
-// const users = [
-//     {
-//         name: 'brynn',
-//         avatar: 'https://uifaces.co/our-content/donated/1H_7AxP0.jpg',
-//     },
-//     {
-//         name: 'thot leader',
-//         avatar:
-//             'https://images.pexels.com/photos/598745/pexels-photo-598745.jpeg?crop=faces&fit=crop&h=200&w=200&auto=compress&cs=tinysrgb',
-//     },
-//     {
-//         name: 'jsa',
-//         avatar: 'https://uifaces.co/our-content/donated/bUkmHPKs.jpg',
-//     },
-//     {
-//         name: 'talhaconcepts',
-//         avatar: 'https://randomuser.me/api/portraits/men/4.jpg',
-//     },
-//     {
-//         name: 'andy vitale',
-//         avatar: 'https://uifaces.co/our-content/donated/NY9hnAbp.jpg',
-//     },
-//     {
-//         name: 'katy friedson',
-//         avatar:
-//             'https://images-na.ssl-images-amazon.com/images/M/MV5BMTgxMTc1MTYzM15BMl5BanBnXkFtZTgwNzI5NjMwOTE@._V1_UY256_CR16,0,172,256_AL_.jpg',
-//     },
-// ];

@@ -1,19 +1,18 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { useLayoutEffect, useState } from 'react'
 import { Button, Card } from '@rneui/base'
-import storage from '../storage'
-import Toast from 'react-native-toast-message';
-import zIndex from '@mui/material/styles/zIndex';
 
-const ChangePassword = ({ route, navigation }) => {
+const NewPassword = ({ navigation, route }) => {
+
     const host = "172.31.65.218";
-    const { setIsLoggedIn } = route.params;
+
+    const { setIsLoggedIn, username } = route.params;
 
     useLayoutEffect(() => {
 
         navigation.setOptions({
 
-            title: "Change Password",
+            title: "New Password",
             headerStyle: { backgroundColor: 'white' },
             headerTitleStyle: { color: "black" },
             headerTintColor: "black",
@@ -21,89 +20,41 @@ const ChangePassword = ({ route, navigation }) => {
         })
     }, [])
 
-    const [oldPassword, setoldPassword] = useState("");
     const [newPassword, setnewPassword] = useState("");
 
-    const showToastSuccess = () => {
-        Toast.show({
-            type: 'success',
-            text1: 'Password Changed successfully',
-
-        });
-    }
-
-    const showToastError = () => {
-        Toast.show({
-            type: 'error',
-            text1: 'Please type correct old password'
-        });
-    }
-
-
     const handleSubmit = async () => {
-        // console.log("Yes")
-        let res = await storage.load({ key: "CleanerloginState" })
-        let username = res.username;
-        let token = res.token;
-
-        let body = {
-            oldPassword: oldPassword,
-            newPassword: newPassword,
-            username: username
-        }
-
         try {
-            let response = await fetch(`http://${host}:8080/cleaner/changePassword`, {
-                method: "PUT",
+
+            let res = await fetch(`http://${host}:8080/login/changePassword`, {
+                method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                    "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify(body)
+                body: JSON.stringify({ newPassword: newPassword, username: username })
             })
-            // console.log(response);
+            try {
+                // const response = await res.json();
+                // console.log(response);
+                // console.log(res);
 
-            if (response.status == 200) {
-                showToastSuccess();
-
-                try {
-                    const key = "ClientloginState";
-                    setIsLoggedIn(false);
-                    storage.remove({ key: key })
-                } catch (error) {
-                    console.log("Yes");
-                    console.log(error);
+                if (res.status == 200) {
+                    // found 
+                    // navigation.
+                    // setIsLoggedIn(true);
+                    navigation.navigate("login")
                 }
-            } else {
-                // console.log('no')
-                showToastError();
+            } catch (error) {
+                console.log(res.status);
+                console.log(error);
             }
-
         } catch (error) {
             console.log(error);
         }
     }
+
     return (
         <View>
-            <Toast style={{ zIndex: 10 }} position='top' duration={3000} />
-            <View style={{ zIndex: -1 }}>
 
-                <Card  >
-                    <View style={[styles.user, { zIndex: -1 }]} >
-                        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%' }} >
-
-                            <TextInput
-                                style={styles.TextInput}
-                                placeholder="Old password"
-                                placeholderTextColor="#003f5c"
-                                secureTextEntry={true}
-                                onChangeText={(password) => setoldPassword(password)}
-                            />
-                        </View>
-
-                    </View>
-                </Card>
-            </View>
             <View>
 
                 <Card style={{ zIndex: -1 }}>
@@ -127,12 +78,11 @@ const ChangePassword = ({ route, navigation }) => {
             <View style={{ padding: 15 }}>
                 <Button style={styles.btn} onPress={() => handleSubmit()} >Submit</Button>
             </View>
-
         </View>
     )
 }
 
-export default ChangePassword
+export default NewPassword
 
 const styles = StyleSheet.create({
     TextInput: {

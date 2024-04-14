@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -11,9 +11,28 @@ import {
 import storage from "../storage";
 import { LogBox } from 'react-native';
 
-const LoginScreen = ({ setIsLoggedIn, navigation }) => {
+const LoginScreen = ({ route, navigation }) => {
 
+    const { setIsLoggedIn } = route.params;
 
+    const host = "172.31.65.218";
+
+    useLayoutEffect(() => {
+
+        navigation.setOptions({
+            headerLeft: () => (
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginRight: 10 }}>
+
+                </View>
+            ),
+
+            title: "Login",
+            headerStyle: { backgroundColor: 'white' },
+            headerTitleStyle: { color: "black" },
+            headerTintColor: "black",
+            headerTitleAlign: 'center',
+        })
+    }, [])
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -50,15 +69,15 @@ const LoginScreen = ({ setIsLoggedIn, navigation }) => {
     const handlelogin = async () => {
         console.log("trying to login");
         // console.log(props); 
-        
+
         try {
 
-            let res = await fetch("http://172.31.65.95:8080/login/cleaner", {
+            let res = await fetch(`http://${host}:8080/login/cleaner`, {
                 method: "POST",
                 headers: {
                     'Content-Type': "application/json"
                 },
-                body: JSON.stringify({ username: email, password: password, type:"cleaner" })
+                body: JSON.stringify({ username: email, password: password, type: "cleaner" })
             })
             if (res.ok) {
                 let response = await res.json();
@@ -72,6 +91,10 @@ const LoginScreen = ({ setIsLoggedIn, navigation }) => {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    const handleForgetPassword = () => {
+        navigation.navigate("forgetpassword", { setIsLoggedIn: setIsLoggedIn });
     }
 
     return (
@@ -94,7 +117,7 @@ const LoginScreen = ({ setIsLoggedIn, navigation }) => {
                 />
             </View>
             <TouchableOpacity>
-                <Text style={styles.forgot_button}>Forgot Password?</Text>
+                <Text style={styles.forgot_button} onPress={() => handleForgetPassword()} >Forgot Password?</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.loginBtn} onPress={() => handlelogin()} >
                 <Text style={styles.loginText}>LOGIN</Text>

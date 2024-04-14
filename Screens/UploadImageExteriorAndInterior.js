@@ -12,7 +12,7 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
 
     const { car, setadded } = route.params
     // console.log("Printing car", car);
-
+    const host = "172.31.65.218";
 
     const [allImages, setallImages] = useState([])
     const [extImages, setextImages] = useState([null, null, null, null, null]);
@@ -125,7 +125,7 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
         setprogress(0.8);
 
 
-        res = await fetch("http://172.31.65.95:8080/cleaner/postMediaExtAndInt", {
+        res = await fetch(`http://${host}:8080/cleaner/postMediaExtAndInt`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

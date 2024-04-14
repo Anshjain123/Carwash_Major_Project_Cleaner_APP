@@ -15,13 +15,17 @@ import storage from './storage';
 import AccountScreen from './Screens/AccountScreen';
 import Address from './Screens/Address';
 import ChangePassword from './Screens/ChangePassword';
+import ForgetPassword from './Screens/ForgetPassword';
+import OtpScreen from './Screens/OtpScreen';
+import NewPassword from './Screens/NewPassword';
+
 
 export default function App() {
 
   // const navigation = useNavigation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setemail] = useState(null);
-
+  const host = "172.31.65.218";
 
   // console.log(socket); 
   // socket.onopen = () => {
@@ -31,11 +35,12 @@ export default function App() {
 
   const validateToken = async () => {
 
+
     let res = await storage.load({ key: "CleanerloginState" })
     let username = res.username;
     let token = res.token;
 
-    let response = await fetch("http://172.31.65.95:8080/cleaner/validateToken", {
+    let response = await fetch(`http://${host}:8080/cleaner/validateToken`, {
       method: "GET",
       headers: {
         'Content-Type': "application/json",
@@ -63,29 +68,31 @@ export default function App() {
     <>
 
 
-      {!isLoggedIn && <LoginScreen setIsLoggedIn={setIsLoggedIn} />}
-      {isLoggedIn && <NavigationContainer>
+      {/* {!isLoggedIn && <LoginScreen setIsLoggedIn={setIsLoggedIn} />} */}
+      <NavigationContainer
+
+      >
 
         <Stack.Navigator>
 
 
-          <Stack.Screen
+          {isLoggedIn && <Stack.Screen
 
             name='Home'
             component={Home}
             initialParams={{ email: email, setIsLoggedIn: setIsLoggedIn }}
 
           // children={() => <Home email={email} navigation={navigation} />}
-          />
-          <Stack.Screen
+          />}
+          {isLoggedIn && <Stack.Screen
 
             name='cardetails'
             component={CarDetails}
           // initialParams={{ email: email }}
 
           // children={() => <Home email={email} navigation={navigation} />}
-          />
-          <Stack.Screen
+          />}
+          {isLoggedIn && <Stack.Screen
             name='uploadMediaExterior'
             component={UploadMediaExterior}
             options={({ navigation }) => ({
@@ -97,10 +104,9 @@ export default function App() {
 
             })}
 
-          // children={() => <UploadImage navigation={navigation} />}
-          />
+          />}
 
-          <Stack.Screen
+          {isLoggedIn && <Stack.Screen
             name='uploadMediaExteriorAndInterior'
             component={UploadImageExteriorAndInterior}
             options={({ navigation }) => ({
@@ -111,29 +117,52 @@ export default function App() {
               ),
             })}
 
-          // children={() => <UploadImage navigation={navigation} />}
-          />
-          <Stack.Screen
+          />}
+          {isLoggedIn && <Stack.Screen
 
             name="accountscreen"
             component={AccountScreen}
-          // children={() => <ShowImage />}
           />
-
-          <Stack.Screen
+          }
+          {isLoggedIn && <Stack.Screen
 
             name="address"
             component={Address}
           // children={() => <ShowImage />}
-          />
-          <Stack.Screen
+          />}
+          {isLoggedIn && <Stack.Screen
 
             name="password"
             component={ChangePassword}
           // children={() => <ShowImage />}
-          />
+          />}
+          {isLoggedIn == false && <Stack.Screen
+
+            name="login"
+            component={LoginScreen}
+            setIsLoggedIn={setIsLoggedIn}
+            initialParams={{ setIsLoggedIn: setIsLoggedIn }}
+          />}
+          {isLoggedIn == false && <Stack.Screen
+
+            name="forgetpassword"
+            component={ForgetPassword}
+
+          />}
+          {isLoggedIn == false && <Stack.Screen
+
+            name="otpscreen"
+            component={OtpScreen}
+
+          />}
+          {isLoggedIn == false && <Stack.Screen
+
+            name="newpassword"
+            component={NewPassword}
+
+          />}
         </Stack.Navigator>
-      </NavigationContainer>}
+      </NavigationContainer>
     </>
 
 

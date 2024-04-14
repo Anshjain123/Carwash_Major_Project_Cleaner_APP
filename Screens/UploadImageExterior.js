@@ -13,7 +13,7 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
     const { car, setadded } = route.params
     // console.log("Printing car", car);
-
+    const host = "172.31.65.218";
 
 
     const [url, seturl] = useState(null)
@@ -115,7 +115,7 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
         setprogress(0.8);
 
-        res = await fetch("http://172.31.65.95:8080/cleaner/postMedia", {
+        res = await fetch(`http://${host}:8080/cleaner/postMedia`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

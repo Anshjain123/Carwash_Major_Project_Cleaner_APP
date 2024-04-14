@@ -8,6 +8,7 @@ import storage from '../storage'
 import Toast from 'react-native-toast-message'
 
 const Address = ({ navigation, route }) => {
+    const host = "172.31.65.218";
     useLayoutEffect(() => {
 
         navigation.setOptions({
@@ -62,7 +63,7 @@ const Address = ({ navigation, route }) => {
         }
 
         try {
-            let response = await fetch("http://172.31.65.95:8080/cleaner/updateAddress", {
+            let response = await fetch(`http://${host}:8080/cleaner/updateAddress`, {
                 method: "PUT",
                 headers: {
                     'Content-Type': 'application/json',
@@ -100,7 +101,7 @@ const Address = ({ navigation, route }) => {
 
         // console.log(token, username);
 
-        let response = await fetch(`http://172.31.65.95:8080/cleaner/getCleanerAddress/${username}`, {
+        let response = await fetch(`http://${host}:8080/cleaner/getCleanerAddress/${username}`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
@@ -123,7 +124,7 @@ const Address = ({ navigation, route }) => {
 
     useEffect(() => {
         getCleanerAddress();
-    }, [])
+    }, [navigation])
 
     return (
         <View>
