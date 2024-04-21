@@ -5,7 +5,7 @@ import { Card, Button } from '@rneui/base';
 import Toast from 'react-native-toast-message';
 
 const ForgetPassword = ({ navigation, route }) => {
-    const host = "172.31.65.218";
+    const host = "172.31.65.239";
     const {setIsLoggedIn} = route.params;
     const [username, setusername] = useState("");
 
@@ -33,7 +33,7 @@ const ForgetPassword = ({ navigation, route }) => {
         // console.log(username);
         try {
 
-            let res = await fetch(`http://${host}:8080/login/getotp/${username}`, {
+            let res = await fetch(`http://${host}:8080/login/cleaner/getotp/${username}`, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json',

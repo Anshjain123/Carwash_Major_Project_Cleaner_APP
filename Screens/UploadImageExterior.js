@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer, useLayoutEffect } from 'react';
 import { Image, View, Platform, TouchableOpacity, Text, StyleSheet, ScrollView } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -13,7 +13,7 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
     const { car, setadded } = route.params
     // console.log("Printing car", car);
-    const host = "172.31.65.218";
+    const host = "172.31.65.239";
 
 
     const [url, seturl] = useState(null)
@@ -23,9 +23,28 @@ const UploadMediaExterior = ({ navigation, route }) => {
     const [progress, setprogress] = useState(0)
     const [refreshKey, setrefreshKey] = useState(0)
     const [visible, setvisible] = useState(false);
-    const [extFiles, setextFiles] = useState([null, null, null, null, null]); 
+    const [extFiles, setextFiles] = useState([null, null, null, null, null]);
 
     // const navigation = useNavigation();
+    useLayoutEffect(() => {
+
+        navigation.setOptions({
+            headerLeft: () => (
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginRight: 10 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Home")} >
+                        <AntDesign name="arrowleft" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
+            ),
+
+            title: "Upload Exterior Image",
+            headerStyle: { backgroundColor: 'white' },
+            headerTitleStyle: { color: "black" },
+            headerTintColor: "black",
+            headerTitleAlign: 'center',
+        })
+    }, [])
+
 
 
 
@@ -44,9 +63,9 @@ const UploadMediaExterior = ({ navigation, route }) => {
             aspect: [4, 3],
             base64: true,
             zIndex: -1,
-        })    
-        
-        if(_image.assets == null) return; 
+        })
+
+        if (_image.assets == null) return;
 
         const uri = _image.assets[0].uri;
         // // ImagePicker.launchCamera
@@ -68,20 +87,20 @@ const UploadMediaExterior = ({ navigation, route }) => {
         arr = allImagesData;
         arr.push(base);
 
-        
+
         setallImagesData(arr);
 
-        arr = extFiles; 
-        arr[idx] = base; 
-        setextFiles(arr); 
+        arr = extFiles;
+        arr[idx] = base;
+        setextFiles(arr);
 
         setrefreshKey(refreshKey + 1);
     };
 
     const handleSubmit = async () => {
 
-        
-        
+
+
         setprogress(0.1);
         setprogress(0.2);
         if (allImages.length < 5) {
@@ -102,12 +121,12 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
         setprogress(0.6);
         setprogress(0.7);
-        
+
 
         setvisible(true);
 
-        
-   
+
+
         let body = {
             allImagesData: allImagesData,
             carNumber: car.carNumber
@@ -128,23 +147,19 @@ const UploadMediaExterior = ({ navigation, route }) => {
         setprogress(1);
 
         setvisible(false);
-
-        setadded(true);
-
-        navigation.navigate("Home");
+        
+        // console.log(res); 
+        if (res.status == 200) {
+            setadded(true);
+            showToastSuccess();
+            navigation.navigate("Home")
+        } else {
+            showToastError();
+        }
+        // navigation.navigate("Home");
 
         // console.log(res); 
     }
-
-    const showError = () => {
-
-        showMessage({
-            message: "Please upload all photos",
-            type: "danger",
-            position: "top",
-            duration: 3000, // 3 seconds
-        });
-    };
 
 
     const showToastSuccess = () => {
@@ -155,20 +170,23 @@ const UploadMediaExterior = ({ navigation, route }) => {
     }
 
     const showToastError = () => {
+        const errorMessage = 'Either all images not uploaded \n or car number plate image not uploaded correctly';
         Toast.show({
             type: 'error',
-            text1: 'Please upload all Photos'
+            text1: 'Error',
+            text2: errorMessage,
+            text1Style: { fontWeight: 'bold', fontSize: 10 },
+            text2Style: { fontSize: 8},
         });
     }
 
-    const screenWidth = window.innerWidth; 
+    const screenWidth = window.innerWidth;
 
-    console.log(extFiles); 
     return (
         <>
             <ScrollView>
 
-                {visible && <Progress.Bar progress={progress} style={{width:"100vw"}} />}
+                {visible && <Progress.Bar progress={progress} style={{ width: "100vw" }} />}
                 <Toast style={{ zIndex: 1 }} position='top' />
                 <View >
                     <View style={{ display: 'flex', flexDirection: 'row', zIndex: -1 }}>
@@ -277,7 +295,7 @@ const imageUploaderStyles = StyleSheet.create({
         display: 'flex',
         alignItems: "center",
         justifyContent: 'center',
-        padding:10
+        padding: 10
     }
 
 })

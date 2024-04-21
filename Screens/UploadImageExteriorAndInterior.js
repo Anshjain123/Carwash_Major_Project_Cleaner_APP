@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer, useLayoutEffect } from 'react';
 import { Image, View, Platform, TouchableOpacity, Text, StyleSheet, ScrollView } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -12,7 +12,7 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
 
     const { car, setadded } = route.params
     // console.log("Printing car", car);
-    const host = "172.31.65.218";
+    const host = "172.31.65.239";
 
     const [allImages, setallImages] = useState([])
     const [extImages, setextImages] = useState([null, null, null, null, null]);
@@ -25,6 +25,28 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
     const [refreshKey, setrefreshKey] = useState(0)
     const [visible, setvisible] = useState(false);
     // const navigation = useNavigation();
+
+
+
+    useLayoutEffect(() => {
+
+        navigation.setOptions({
+            headerLeft: () => (
+                <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginRight: 10 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate("login")} >
+                        <AntDesign name="arrowleft" size={24} color="black" />
+                    </TouchableOpacity>
+                </View>
+            ),
+
+            title: "Upload Exterior and Interior Images",
+            headerStyle: { backgroundColor: 'white' },
+            headerTitleStyle: { color: "black" },
+            headerTintColor: "black",
+            headerTitleAlign: 'center',
+        })
+    }, [])
+
 
 
 
@@ -49,9 +71,9 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
 
         setextFiles(arr);
 
-        arr = extImages; 
-        arr[idx] = base; 
-        setextImages(arr);  
+        arr = extImages;
+        arr[idx] = base;
+        setextImages(arr);
 
         setrefreshKey(refreshKey + 1);
     }
@@ -78,8 +100,8 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
 
         setintFiles(arr);
         arr = intImages;
-        arr[idx] = base; 
-        setintImages(arr); 
+        arr[idx] = base;
+        setintImages(arr);
 
         setrefreshKey(refreshKey + 1);
     }
@@ -93,11 +115,11 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
 
         }
 
-        
+
         setprogress(0.1);
         setprogress(0.2);
 
-        setvisible(true); 
+        setvisible(true);
         let res = await storage.load({ key: "CleanerloginState" })
 
         let username = res.username
@@ -119,7 +141,7 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
             carNumber: car.carNumber
         }
 
-        
+
         setprogress(0.6);
         setprogress(0.7);
         setprogress(0.8);
@@ -137,10 +159,15 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
         setprogress(0.9);
         setprogress(1);
 
-        setadded(true);
         showToastSuccess();
-        setvisible(false); 
-        navigation.navigate("Home");
+        setvisible(false);
+        if (res.status == 200) {
+            setadded(true);
+            showToastSuccess();
+            navigation.navigate("Home");
+        } else {
+            showToastError();
+        }
 
         // console.log(res); 
 
@@ -154,21 +181,25 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
         });
     }
 
-    const showToastError = () => {
+    const showToastError = (text) => {
+        const errorMessage = 'Either all images not uploaded \n or car number plate image not uploaded correctly';
         Toast.show({
             type: 'error',
-            text1: 'Please upload all interior and exterior photos'
+            text1: 'Error',
+            text2: errorMessage,
+            text1Style: { fontWeight: 'bold', fontSize: 10 },
+            text2Style: { fontSize: 8 },
         });
     }
 
     console.log(intImages);
-    const screenWidth = window.innerWidth; 
+    const screenWidth = window.innerWidth;
 
     return (
         <>
             <ScrollView>
 
-                {visible && <Progress.Bar progress={progress} style={{width:"100vw"}} />}
+                {visible && <Progress.Bar progress={progress} style={{ width: "100vw" }} />}
                 <Toast style={imageUploaderStyles.toast} position='bottom' />
                 <View style={{ zIndex: -1 }} >
                     <View>

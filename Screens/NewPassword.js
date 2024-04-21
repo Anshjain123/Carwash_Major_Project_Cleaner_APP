@@ -4,7 +4,7 @@ import { Button, Card } from '@rneui/base'
 
 const NewPassword = ({ navigation, route }) => {
 
-    const host = "172.31.65.218";
+    const host = "172.31.65.239";
 
     const { setIsLoggedIn, username } = route.params;
 
@@ -25,7 +25,7 @@ const NewPassword = ({ navigation, route }) => {
     const handleSubmit = async () => {
         try {
 
-            let res = await fetch(`http://${host}:8080/login/changePassword`, {
+            let res = await fetch(`http://${host}:8080/login/cleaner/changePassword`, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',

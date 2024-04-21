@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const Home = ({ route, navigation }) => {
 
-    const host = "172.31.65.218";
+    const host = "172.31.65.239";
 
 
 

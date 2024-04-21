@@ -15,8 +15,7 @@ const CarDetails = ({ navigation, car, allWashedCarsToday, data }) => {
     }
 
 
-    console.log(data);
-
+    console.log(allWashedCarsToday);
     const [added, setadded] = useState(false);
     // const [allWashedCarsToday, setallWashedCarsToday] = useState([]);
     const [value, setValue] = useState(null);

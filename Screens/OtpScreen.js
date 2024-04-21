@@ -9,18 +9,9 @@ import { Button } from '@rneui/base';
 
 const OtpScreen = ({ navigation, route }) => {
 
-  const host = "172.31.65.218";
+  const host = "172.31.65.239";
 
   const { username, setIsLoggedIn } = route.params;
-  let otpInput = useRef(null);
-
-  const clearText = () => {
-    otpInput.current.clear();
-  }
-
-  const setText = () => {
-    otpInput.current.setValue("1234");
-  }
 
   const [otp, setotp] = useState("");
 
@@ -28,7 +19,7 @@ const OtpScreen = ({ navigation, route }) => {
 
     try {
 
-      let res = await fetch(`http://${host}:8080/login/validateOtp`, {
+      let res = await fetch(`http://${host}:8080/login/cleaner/validateOtp`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',

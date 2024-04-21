@@ -8,7 +8,7 @@ import storage from '../storage'
 import Toast from 'react-native-toast-message'
 
 const Address = ({ navigation, route }) => {
-    const host = "172.31.65.218";
+    const host = "172.31.65.239";
     useLayoutEffect(() => {
 
         navigation.setOptions({
