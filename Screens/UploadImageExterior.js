@@ -13,7 +13,7 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
     const { car, setadded } = route.params
     // console.log("Printing car", car);
-    const host = "172.31.65.239";
+    const host = "172.31.66.127";
 
 
     const [url, seturl] = useState(null)
@@ -75,8 +75,12 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
         let arr = allImages;
         // console.log(blob); 
+        if(arr.length < 5) {
 
-        arr.push(uri);
+            arr.push(uri);
+        } else {
+            arr[idx] = uri; 
+        }
 
         setallImages(arr);
 
@@ -85,7 +89,11 @@ const UploadMediaExterior = ({ navigation, route }) => {
 
 
         arr = allImagesData;
-        arr.push(base);
+        if(arr.length < 5) {
+            arr.push(base);
+        } else {
+            arr[idx] = base;  
+        }
 
 
         setallImagesData(arr);

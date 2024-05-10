@@ -5,7 +5,7 @@ import { Card, Button } from '@rneui/base';
 import Toast from 'react-native-toast-message';
 
 const ForgetPassword = ({ navigation, route }) => {
-    const host = "172.31.65.239";
+    const host = "172.31.66.127";
     const {setIsLoggedIn} = route.params;
     const [username, setusername] = useState("");
 
@@ -31,31 +31,31 @@ const ForgetPassword = ({ navigation, route }) => {
 
     const handleSubmit = async () => {
         // console.log(username);
-        try {
+        // try {
 
-            let res = await fetch(`http://${host}:8080/login/cleaner/getotp/${username}`, {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
-            try {
-                // const response = await res.json();
-                // console.log(response);
-                // console.log(res);
+        //     let res = await fetch(`http://${host}:8080/login/cleaner/getotp/${username}`, {
+        //         method: "GET",
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //     })
+        //     try {
+        //         // const response = await res.json();
+        //         // console.log(response);
+        //         // console.log(res);
 
-                if (res.status == 302) {
-                    // found 
-                    // navigation.
-                    navigation.navigate("otpscreen", { username: username, setIsLoggedIn:setIsLoggedIn });
-                }
-            } catch (error) {
-                console.log(res.status);
-                console.log(error);
-            }
-        } catch (error) {
-            console.log(error);
-        }
+        //         if (res.status == 302) {
+        //             // found 
+        //             // navigation.
+        navigation.navigate("otpscreen", { username: username, setIsLoggedIn:setIsLoggedIn });
+        //         }
+        //     } catch (error) {
+        //         console.log(res.status);
+        //         console.log(error);
+        //     }
+        // } catch (error) {
+        //     console.log(error);
+        // }
     }
 
 

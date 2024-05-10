@@ -12,7 +12,7 @@ const UploadImageExteriorAndInterior = ({ navigation, route }) => {
 
     const { car, setadded } = route.params
     // console.log("Printing car", car);
-    const host = "172.31.65.239";
+    const host = "172.31.66.127";
 
     const [allImages, setallImages] = useState([])
     const [extImages, setextImages] = useState([null, null, null, null, null]);

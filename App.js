@@ -25,7 +25,8 @@ export default function App() {
   // const navigation = useNavigation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setemail] = useState(null);
-  const host = "172.31.65.239";
+  const host = "172.31.66.127";
+
 
   // console.log(socket); 
   // socket.onopen = () => {

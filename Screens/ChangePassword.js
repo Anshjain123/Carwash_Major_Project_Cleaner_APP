@@ -6,7 +6,7 @@ import Toast from 'react-native-toast-message';
 import zIndex from '@mui/material/styles/zIndex';
 
 const ChangePassword = ({ route, navigation }) => {
-    const host = "172.31.65.239";
+    const host = "172.31.66.127";
     const { setIsLoggedIn } = route.params;
 
     useLayoutEffect(() => {

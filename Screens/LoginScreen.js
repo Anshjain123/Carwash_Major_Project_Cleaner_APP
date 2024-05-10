@@ -15,7 +15,7 @@ const LoginScreen = ({ route, navigation }) => {
 
     const { setIsLoggedIn } = route.params;
 
-    const host = "172.31.65.239";
+    const host = "172.31.66.127";
 
     useLayoutEffect(() => {
 

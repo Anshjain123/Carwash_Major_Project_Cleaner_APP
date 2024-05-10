@@ -4,7 +4,7 @@ import { Button, Card } from '@rneui/base'
 
 const NewPassword = ({ navigation, route }) => {
 
-    const host = "172.31.65.239";
+    const host = "172.31.66.127";
 
     const { setIsLoggedIn, username } = route.params;
 

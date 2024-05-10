@@ -1,5 +1,5 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native'
-import React, { useRef, useState } from 'react'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button } from '@rneui/base';
 // import { OTPTextInput } from 'react-native-otp-textinput';
 // OTPTextView
@@ -9,11 +9,59 @@ import { Button } from '@rneui/base';
 
 const OtpScreen = ({ navigation, route }) => {
 
-  const host = "172.31.65.239";
+  const host = "172.31.66.127";
 
   const { username, setIsLoggedIn } = route.params;
-
+  const [seconds, setSeconds] = useState(30);
   const [otp, setotp] = useState("");
+
+  const getOtp = async () => {
+    try {
+
+      let res = await fetch(`http://${host}:8080/login/cleaner/getotp/${username}`, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      try {
+        // const response = await res.json();
+        // console.log(response);
+        // console.log(res);
+
+        // if (res.status == 302) {
+        //   // found 
+        //   // navigation.
+        //   navigation.navigate("otpscreen", { username: username, setIsLoggedIn: setIsLoggedIn });
+        // }
+      } catch (error) {
+        console.log(res.status);
+        console.log(error);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getOtp();
+
+  }, [])
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (seconds > 0) {
+        setSeconds(prevSeconds => prevSeconds - 1);
+      }
+    }, 1000);
+
+    // Clean up the timer when the component unmounts or when seconds reach 0
+    return () => clearInterval(intervalId);
+  }, [])
+  const handleGetOtp = async () => {
+    setSeconds(30);
+    getOtp();
+  }
 
   const handleSubmit = async () => {
 
@@ -59,6 +107,12 @@ const OtpScreen = ({ navigation, route }) => {
           onChangeText={(otp) => setotp(otp)}
         />
       </View>
+      {seconds > 0 && <View style={{ alignItems: 'center', paddingBottom: 15 }}>
+        <Text style={{ fontSize: 14, color: 'gray' }}>Resend otp in: {seconds} seconds</Text>
+      </View>}
+      {seconds <= 0 && <TouchableOpacity style={{ alignItems: 'center', paddingBottom: 15 }}>
+        <Text disabled={seconds > 0 ? true : false} style={{ color: '#668DB1' }} onPress={() => handleGetOtp()} >Resend Otp</Text>
+      </TouchableOpacity>}
       <View>
 
         <Button onPress={() => handleSubmit()} >Submit</Button>
